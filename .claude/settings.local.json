@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --no-tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npx create-next-app@latest . --typescript --no-tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes --name=ziggysite)",
+      "Bash(npx create-next-app@latest /tmp/nextjs-init --typescript --no-tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(cp /tmp/nextjs-init/package.json /c/Users/alexa/Documents/Projects/ZiggySite/package.json)",
+      "Bash(cp /tmp/nextjs-init/package-lock.json /c/Users/alexa/Documents/Projects/ZiggySite/package-lock.json)",
+      "Bash(cp /tmp/nextjs-init/tsconfig.json /c/Users/alexa/Documents/Projects/ZiggySite/tsconfig.json)",
+      "Bash(cp /tmp/nextjs-init/next.config.ts /c/Users/alexa/Documents/Projects/ZiggySite/next.config.ts)",
+      "Bash(cp /tmp/nextjs-init/next-env.d.ts /c/Users/alexa/Documents/Projects/ZiggySite/next-env.d.ts)",
+      "Bash(cp -r /tmp/nextjs-init/app /c/Users/alexa/Documents/Projects/ZiggySite/)",
+      "Bash(cp -r /tmp/nextjs-init/public /c/Users/alexa/Documents/Projects/ZiggySite/)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(firebase --version)",
+      "Bash(gsutil version:*)",
+      "Bash(firebase storage:cors update cors.json --bucket ziggyportfolio-fa3b9.firebasestorage.app)",
+      "Bash(firebase storage:cors update --help)",
+      "Bash(firebase storage:cors --help)",
+      "Bash(firebase storage:cors update cors.json)",
+      "Bash(gcloud storage:*)"
+    ]
+  }
+}
