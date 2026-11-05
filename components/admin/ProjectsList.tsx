@@ -1,5 +1,6 @@
 'use client';
 
+import { cldUrl } from '@/lib/cloudinary';
 import { useState, useEffect } from 'react';
 import {
   collection,
@@ -109,7 +110,7 @@ export default function ProjectsList({ onManagePhotos, onEdit }: ProjectsListPro
               <div key={project.id} className="project-row">
                 {project.coverUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img className="project-thumb" src={project.coverUrl} alt={project.title} />
+                  <img className="project-thumb" src={cldUrl(project.coverUrl, 'thumb')} alt={project.title} />
                 ) : (
                   <div className="project-thumb-placeholder">✦</div>
                 )}

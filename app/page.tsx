@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Project } from '@/types';
+import SiteHeader from '@/components/portfolio/SiteHeader';
 import HeroSection from '@/components/portfolio/HeroSection';
-import AboutSection from '@/components/portfolio/AboutSection';
+import Marquee from '@/components/portfolio/Marquee';
 import ProjectsOverview from '@/components/portfolio/ProjectsOverview';
-import ProjectDetail from '@/components/portfolio/ProjectDetail';
+import AboutSection from '@/components/portfolio/AboutSection';
 import ContactSection from '@/components/portfolio/ContactSection';
+import ProjectDetail from '@/components/portfolio/ProjectDetail';
+import SiteFooter from '@/components/portfolio/SiteFooter';
 
-type View = 'home' | 'about' | 'overview' | 'project' | 'contact';
+type View = 'home' | 'project';
 
 const FALLBACK_PROJECTS: Project[] = [
   {
@@ -20,7 +23,7 @@ const FALLBACK_PROJECTS: Project[] = [
     location: 'Antwerpen',
     description:
       'Een minimalistisch stijlvol design van creative ontwerper/designer Bart Vermeulen van architenctenbureau N° by Inside Insight...',
-    coverUrl: '/images/project1/cover.jpg',
+    coverUrl: '/images/project1/part2/foto1.jpg',
     parts: [
       { id: 'part1', title: 'Eerste Deel', folder: 'images/project1/part1' },
       { id: 'part2', title: 'Tweede Deel', folder: 'images/project1/part2' },
@@ -73,53 +76,101 @@ export default function HomePage() {
     loadProjects();
   }, []);
 
-  const navigate = (newView: View) => {
-    setView(newView);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Scroll-reveal: observe .reveal elements whenever the rendered view changes
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal:not(.in)');
+    if (els.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [view, projects]);
+
+  const switchView = (newView: View) => {
+    const apply = () => {
+      setView(newView);
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    };
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => void;
+    };
+    if (doc.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      doc.startViewTransition(apply);
+    } else {
+      apply();
+    }
+  };
+
+  const scrollToSection = (id: string) => {
+    if (view !== 'home') {
+      setView('home');
+      // Wait for the home view to render before scrolling to the target section
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const goHome = () => {
+    if (view !== 'home') switchView('home');
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const openProject = (id: string) => {
     setCurrentProjectId(id);
-    navigate('project');
+    switchView('project');
+  };
+
+  const closeProject = () => {
+    setView('home');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('projects')?.scrollIntoView();
+      });
+    });
   };
 
   const currentProject = projects.find((p) => p.id === currentProjectId) ?? null;
 
-  const showBack = view !== 'home';
-
   return (
     <>
-      {showBack && (
-        <button
-          className="back-btn active"
-          onClick={() => {
-            if (view === 'project') navigate('overview');
-            else navigate('home');
-          }}
-        >
-          {view === 'project' ? '← Alle Projecten' : '← Terug'}
-        </button>
-      )}
+      <SiteHeader
+        onHome={goHome}
+        onNav={scrollToSection}
+        onBack={closeProject}
+        showBack={view === 'project'}
+      />
 
       {view === 'home' && (
-        <HeroSection
-          onAbout={() => navigate('about')}
-          onWork={() => navigate('overview')}
-          onContact={() => navigate('contact')}
-        />
-      )}
-
-      {view === 'about' && <AboutSection />}
-
-      {view === 'overview' && (
-        <ProjectsOverview projects={projects} onProjectClick={openProject} />
+        <main>
+          <HeroSection onScrollToProjects={() => scrollToSection('projects')} />
+          <Marquee />
+          <ProjectsOverview projects={projects} onProjectClick={openProject} />
+          <AboutSection />
+          <ContactSection />
+          <SiteFooter />
+        </main>
       )}
 
       {view === 'project' && currentProject && (
-        <ProjectDetail project={currentProject} />
+        <main>
+          <ProjectDetail project={currentProject} />
+          <SiteFooter />
+        </main>
       )}
-
-      {view === 'contact' && <ContactSection />}
     </>
   );
 }
