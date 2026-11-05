@@ -1,23 +1,35 @@
 'use client';
 
-// Note: place zvalogo-removebg-preview.png in the public/ folder
+import Image from 'next/image';
 
 interface HeroSectionProps {
-  onAbout: () => void;
-  onWork: () => void;
-  onContact: () => void;
+  onScrollToProjects: () => void;
 }
 
-export default function HeroSection({ onAbout, onWork, onContact }: HeroSectionProps) {
+export default function HeroSection({ onScrollToProjects }: HeroSectionProps) {
   return (
     <section className="hero">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/zvalogo-removebg-preview.png" alt="Ziggy Van Asch Logo" />
-      <p className="tagline">Fotografie</p>
-      <div className="nav-buttons">
-        <button className="btn" onClick={onAbout}>Wie ben ik</button>
-        <button className="btn" onClick={onWork}>Mijn projecten</button>
-        <button className="btn" onClick={onContact}>Contact</button>
+      <div className="hero-media">
+        <Image
+          src="/images/project1/part2/foto1.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+        />
+      </div>
+      <div className="hero-content">
+        <p className="hero-kicker">Fotografie — Antwerpen, België</p>
+        <h1 className="hero-title">
+          <span className="line"><span>Van Asch</span></span>
+          <span className="line"><span>Visuals</span></span>
+        </h1>
+        <div className="hero-meta">
+          <span>Authentieke momenten, vastgelegd in beeld</span>
+          <button className="hero-scroll-cue" onClick={onScrollToProjects}>
+            Bekijk projecten <span className="arrow">↓</span>
+          </button>
+        </div>
       </div>
     </section>
   );

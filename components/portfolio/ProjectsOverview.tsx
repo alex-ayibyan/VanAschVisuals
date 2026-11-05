@@ -8,24 +8,29 @@ interface ProjectsOverviewProps {
   onProjectClick: (id: string) => void;
 }
 
-const SKELETON_COUNT = 3;
+const SKELETON_COUNT = 6;
 
 export default function ProjectsOverview({ projects, onProjectClick }: ProjectsOverviewProps) {
   return (
-    <section className="projects-overview active">
-      <div className="portfolio-header">
-        <h2>Mijn Projecten</h2>
-        <p className="subtitle">Portfolio</p>
+    <section className="section" id="projects">
+      <div className="section-head reveal">
+        <h2 className="section-title">Projecten</h2>
+        <span className="section-count">
+          {projects.length > 0 ? `${String(projects.length).padStart(2, '0')} — Portfolio` : 'Portfolio'}
+        </span>
       </div>
       <div className="projects-grid">
         {projects.length === 0
           ? Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-              <div key={i} className="project-card project-card-skeleton" />
+              <div key={i} className="p-card p-card-skel">
+                <div className="p-card-media" />
+              </div>
             ))
-          : projects.map((project) => (
+          : projects.map((project, i) => (
               <ProjectCard
                 key={project.id}
                 project={project}
+                index={i}
                 onClick={() => onProjectClick(project.id)}
               />
             ))}

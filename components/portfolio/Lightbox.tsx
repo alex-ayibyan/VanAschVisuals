@@ -1,5 +1,6 @@
 'use client';
 
+import { cldUrl } from '@/lib/cloudinary';
 import { useEffect } from 'react';
 import { LightboxImage } from '@/types';
 
@@ -43,7 +44,7 @@ export default function Lightbox({ images, index, onClose, onNavigate }: Lightbo
       <div className="lightbox-counter">{index + 1} / {images.length}</div>
       <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="lightbox-image" src={current.src} alt={current.title} />
+        <img className="lightbox-image" src={cldUrl(current.src, 'full')} alt={current.title} />
       </div>
       {(current.title || current.description) && (
         <div className="lightbox-caption">

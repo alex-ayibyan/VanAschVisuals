@@ -1,22 +1,46 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Playfair_Display } from "next/font/google";
+import { Archivo } from "next/font/google";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  weight: ["300", "400", "600"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
+// TODO: replace with the live domain before deploying so OG/Twitter image URLs resolve
+const siteUrl = "https://ziggyvanasch.be";
 
 export const metadata: Metadata = {
-  title: "Portfolio | Fotografie",
-  description: "Ziggy Van Asch — Fotografie portfolio",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Ziggy Van Asch — Fotografie",
+    template: "%s | Ziggy Van Asch",
+  },
+  description:
+    "Fotografieportfolio van Ziggy Van Asch. Bekijk projecten, leer meer over mijn werk en neem contact op voor samenwerkingen.",
+  keywords: ["fotografie", "fotograaf", "portfolio", "Ziggy Van Asch", "België"],
+  openGraph: {
+    title: "Ziggy Van Asch — Fotografie",
+    description: "Fotografieportfolio van Ziggy Van Asch.",
+    url: siteUrl,
+    siteName: "Ziggy Van Asch",
+    images: [{ url: "/zvaprofile.jpeg", width: 800, height: 1000 }],
+    locale: "nl_BE",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ziggy Van Asch — Fotografie",
+    description: "Fotografieportfolio van Ziggy Van Asch.",
+    images: ["/zvaprofile.jpeg"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
+export const viewport = {
+  themeColor: "#0A0A0A",
 };
 
 export default function RootLayout({
@@ -25,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="nl" className={`${cormorant.variable} ${playfair.variable}`}>
+    <html lang="nl" className={archivo.variable}>
       <body>{children}</body>
     </html>
   );

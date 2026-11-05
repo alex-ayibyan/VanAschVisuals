@@ -1,37 +1,41 @@
 'use client';
 
+import { cldUrl } from '@/lib/cloudinary';
 import { Project } from '@/types';
 
 interface ProjectCardProps {
   project: Project;
+  index: number;
   onClick: () => void;
 }
 
-export default function ProjectCard({ project, onClick }: ProjectCardProps) {
-  const subtitle = [project.year, project.location].filter(Boolean).join(' — ');
+export default function ProjectCard({ project, index, onClick }: ProjectCardProps) {
+  const meta = [project.year, project.location].filter(Boolean).join(' — ');
 
   return (
-    <div className="project-card" onClick={onClick}>
-      {project.coverUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          className="project-card-image"
-          src={project.coverUrl}
-          alt={project.title}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
-        />
-      ) : (
-        <div className="project-card-placeholder">✦</div>
-      )}
-      <div className="project-card-overlay">
-        <div className="project-card-title">{project.title}</div>
-        {subtitle && <div className="project-card-subtitle">{subtitle}</div>}
-        {project.description && (
-          <div className="project-card-description">{project.description}</div>
+    <article className="p-card reveal" onClick={onClick}>
+      <div className="p-card-media">
+        {project.coverUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cldUrl(project.coverUrl, 'card')}
+            alt={project.title}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        ) : (
+          <div className="p-card-placeholder">Coming soon</div>
         )}
+        {meta && <span className="p-card-tag">{meta}</span>}
       </div>
-    </div>
+      <div className="p-card-meta">
+        <span className="p-card-index">{String(index + 1).padStart(2, '0')}</span>
+        <h3 className="p-card-title">{project.title}</h3>
+        {project.year && <span className="p-card-year">{project.year}</span>}
+      </div>
+      <span className="p-card-cta">Bekijk project →</span>
+    </article>
   );
 }

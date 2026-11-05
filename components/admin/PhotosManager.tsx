@@ -1,5 +1,6 @@
 'use client';
 
+import { cldUrl } from '@/lib/cloudinary';
 import { useState, useEffect, useRef, DragEvent, ChangeEvent } from 'react';
 import {
   collection,
@@ -187,7 +188,7 @@ export default function PhotosManager({ project, onBack }: PhotosManagerProps) {
         <div className="cover-upload-row">
           {coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="cover-thumb" src={coverUrl} alt="Cover" />
+            <img className="cover-thumb" src={cldUrl(coverUrl, 'thumb')} alt="Cover" />
           ) : (
             <div className="cover-thumb-placeholder">📷</div>
           )}
@@ -281,7 +282,7 @@ export default function PhotosManager({ project, onBack }: PhotosManagerProps) {
               onDragEnd={() => { setDragIndex(null); setDragTargetIndex(null); }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photo.url} alt={photo.name ?? `Foto ${i + 1}`} loading="lazy" />
+              <img src={cldUrl(photo.url, 'thumb')} alt={photo.name ?? `Foto ${i + 1}`} loading="lazy" />
               <div className="photo-drag-hint">⠿</div>
               <div className="photo-item-overlay">
                 <span className="photo-item-num">{i + 1}</span>

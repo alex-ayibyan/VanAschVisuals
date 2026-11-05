@@ -1,66 +1,39 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { useMemo, useRef, useState } from 'react';
+import { cldUrl } from '@/lib/cloudinary';
 import { ProjectPart, LightboxImage, Photo } from '@/types';
 import Lightbox from './Lightbox';
 
 interface GallerySectionProps {
-  projectId: string;
   part: ProjectPart;
   partIndex: number;
   projectTitle: string;
+  /** All photos of the project (fetched once by ProjectDetail); null while loading */
+  photos: Photo[] | null;
 }
 
-export default function GallerySection({ projectId, part, partIndex, projectTitle }: GallerySectionProps) {
-  const [images, setImages] = useState<LightboxImage[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function GallerySection({ part, partIndex, projectTitle, photos }: GallerySectionProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const loading = photos === null;
 
-  useEffect(() => {
-    async function loadPhotos() {
-      setLoading(true);
-      try {
-        // Fetch all photos for this project, filter by partId client-side
-        // (avoids needing a composite Firestore index)
-        const q = query(
-          collection(db, `projects/${projectId}/photos`),
-          orderBy('order')
-        );
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const photos: LightboxImage[] = snap.docs
-            .map((doc) => ({ id: doc.id, ...(doc.data() as Omit<Photo, 'id'>) }))
-            .filter((p) => p.partId === part.id)
-            .map((p) => ({ src: p.url, title: projectTitle, description: part.title }));
-          if (photos.length > 0) {
-            setImages(photos);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch {
-        // Firestore failed or no data — fall through to folder discovery
-      }
+  const images = useMemo<LightboxImage[]>(() => {
+    if (!photos) return [];
+    const fromFirestore = photos
+      .filter((p) => p.partId === part.id)
+      .map((p) => ({ src: p.url, title: projectTitle, description: part.title }));
+    if (fromFirestore.length > 0) return fromFirestore;
 
-      // Folder-based fallback
-      if (part.folder) {
-        const discovered: LightboxImage[] = [];
-        for (let i = 1; i <= 100; i++) {
-          const src = `/${part.folder}/foto${i}.jpg`;
-          // We can't HEAD-check images on the client easily, so we optimistically add them
-          // and rely on img onerror to hide broken ones in the gallery
-          discovered.push({ src, title: projectTitle, description: part.title });
-        }
-        setImages(discovered);
-      }
-      setLoading(false);
-    }
-
-    loadPhotos();
-  }, [projectId, part, projectTitle]);
+    // Folder-based fallback for local images: optimistically list foto1..foto100
+    // and rely on img onError to hide the ones that don't exist
+    if (!part.folder) return [];
+    return Array.from({ length: 100 }, (_, i) => ({
+      src: `/${part.folder}/foto${i + 1}.jpg`,
+      title: projectTitle,
+      description: part.title,
+    }));
+  }, [photos, part.id, part.folder, part.title, projectTitle]);
 
   const scroll = (dir: 1 | -1) => {
     if (scrollRef.current) {
@@ -88,6 +61,10 @@ export default function GallerySection({ projectId, part, partIndex, projectTitl
           <div className="gallery-loading-spinner" />
           <span>Foto&apos;s laden…</span>
         </div>
+      ) : images.length === 0 ? (
+        <div className="gallery-loading">
+          <span>Foto&apos;s volgen binnenkort</span>
+        </div>
       ) : (
         <div className="gallery-container">
           <button className="gallery-nav-btn prev" onClick={() => scroll(-1)}>‹</button>
@@ -100,7 +77,7 @@ export default function GallerySection({ projectId, part, partIndex, projectTitl
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={img.src}
+                    src={cldUrl(img.src, 'gallery')}
                     alt={`${projectTitle} — ${part.title} — ${i + 1}`}
                     loading="lazy"
                     onError={(e) => {

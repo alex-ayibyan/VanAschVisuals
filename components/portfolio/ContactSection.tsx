@@ -10,20 +10,20 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="contact-section active">
-      <div className="contact-header">
-        <h2>Contact</h2>
-        <p className="subtitle">Laten we samenwerken</p>
+    <section className="section" id="contact">
+      <div className="section-head reveal">
+        <h2 className="section-title">Contact</h2>
+        <span className="section-count">Laten we samenwerken</span>
       </div>
-      <div className="contact-content">
-        <div className="contact-info">
-          <h3>Neem contact op</h3>
-          <div className="contact-item">
-            <div className="contact-label">Email</div>
-            <div className="contact-value">
-              <a href="mailto:info@jouwmail.com">info@jouwmail.com</a>
-            </div>
-          </div>
+      <div className="contact-grid">
+        <div className="reveal">
+          <p className="contact-lede">
+            Een project, samenwerking of gewoon een vraag? Stuur een bericht en ik neem zo snel
+            mogelijk contact op.
+          </p>
+          <a className="contact-big-link" href="mailto:info@jouwmail.com">
+            info@jouwmail.com
+          </a>
           <div className="contact-item">
             <div className="contact-label">Telefoon</div>
             <div className="contact-value">
@@ -53,7 +53,7 @@ export default function ContactSection() {
             </div>
           </div>
         </div>
-        <div className="contact-form">
+        <div className="reveal">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="form-label" htmlFor="contact-name">Naam</label>
